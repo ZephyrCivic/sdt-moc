@@ -1,0 +1,17 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "候補01",
+      "reason": "混雑率↑ × 末端区間 × 区間短縮",
+      "measure": "区間短縮",
+      "strength": "中",
+      "annotations": [
+        {"kind": "line", "feature": {"type": "LineString", "coordinates": [[139.705,35.690],[139.715,35.690]]}}
+      ],
+      "diversityFlags": {"spatial": true, "measureMix": true, "strengthMix": true},
+      "status": "not_evaluated"
+    }
+  ]
+}
+
