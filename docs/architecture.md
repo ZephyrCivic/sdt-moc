@@ -53,6 +53,6 @@ src/
 ## GitHub Pages デプロイ方針
 
 - ビルドターゲット: 静的 SPA（Vite）
-- `vite.config.ts` の `base` を `/<REPO_NAME>/` に設定（例: `"/mlit-ui/"`）
+- `vite.config.ts` の `base` を `"/sdt-moc/"` に設定
 - GitHub Actions（Pages）で `pnpm build` → `dist` を公開
 - 追加資料: `docs/deploy-gh-pages.md`

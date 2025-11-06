@@ -8,6 +8,6 @@
 - [ ] 非同期進捗/再送/最終更新がカード小UIで確認できる
 - [ ] フィルタ/並び替えがカード=地図で同期適用される
 - [ ] 文言/表記が `labels-and-terminology.md` と一致
- - [ ] GitHub Pages で公開URL（`https://<org>.github.io/<REPO_NAME>/`）から正常表示される
+- [ ] GitHub Pages で公開URL（`https://ZephyrCivic.github.io/sdt-moc/`）から正常表示される
  - [ ] GTFS 未読込時は「シナリオ抽出」ボタンが非活性
  - [ ] 候補 0 件時は「SDTで評価」ボタンが非活性

@@ -21,10 +21,13 @@
 - `acceptance-checklist.md` — 受入基準（要件→検証手順へのトレーサビリティ）。
 - `demo-script.md` — デモ進行台本（想定ストーリーの一気通貫）。
 - `project-setup.md` — セットアップ手順（Vite + React + TS + Tailwind + shadcn/ui）。
-- `deploy-gh-pages.md` — GitHub Pages へのデプロイ手順と Actions テンプレート。
+- `deploy-gh-pages.md` — GitHub Pages へのデプロイ手順と Actions テンプレート（公開先: https://ZephyrCivic.github.io/sdt-moc/）。
  - `gtfs-import.md` — GTFS ZIP の取り込みと `Network` への変換仕様。
 
 初期データ: `gtfs_data/AllLines-20250401_群馬中央バス株式会社.zip` を読み込み、左カラムの「シナリオ抽出」で 10 案を提示する流れが基本ジャーニーです。
+
+GitHub リポジトリ: https://github.com/ZephyrCivic/sdt-moc.git
+公開URL（Pages）: https://ZephyrCivic.github.io/sdt-moc/
 - `test-plan.md` — 画面/状態/APIモックの試験観点。
 
 補助リソース:

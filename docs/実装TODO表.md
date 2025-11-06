@@ -105,8 +105,8 @@
     - DoD: `acceptance-checklist.md` のチェックが全て緑
     - 参照: docs/acceptance-checklist.md
 25. [ ] T81-DEMO: デモ台本通りの一気通貫操作確認
-26. [ ] T90-PAGES: GitHub Pages デプロイ（Actions 設定 + Vite base 調整）
-    - DoD: `https://<org>.github.io/<REPO_NAME>/` でアプリが動作
+26. [ ] T90-PAGES: GitHub Pages デプロイ（Actions 設定 + Vite base=/sdt-moc/）
+    - DoD: `https://ZephyrCivic.github.io/sdt-moc/` でアプリが動作
     - 参照: docs/deploy-gh-pages.md
     - DoD: `demo-script.md` に沿って動画/手順で再現
     - 参照: docs/demo-script.md
