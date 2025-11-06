@@ -55,3 +55,7 @@ npx shadcn@latest add button badge card tooltip skeleton toggle switch progress 
 
 - `vite.config.ts` に `base: "/<REPO_NAME>/"` を設定（例: `"/mlit-ui/"`）。
 - 詳細は `docs/deploy-gh-pages.md` を参照。
+
+## 開発サーバ運用ルール
+
+- 開発サーバ（`npm run dev` など）の起動・停止はエージェントが責任を持って実行し、不要になったら必ず `Ctrl + C` で終了すること。

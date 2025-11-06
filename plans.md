@@ -31,15 +31,17 @@
    - DoD: 路線（LineString）と停留所（Point）が Network として得られる（shapes 無い場合は簡略線）
    - 参照: docs/gtfs-import.md, docs/data-schemas.md
    - メモ(2025-11-06): ZIP展開→CSV解析→Network整形ロジックを実装（LineString/StopTime補完対応）
-8. [ ] T07-MAP-BASE: 現状ネットワークの地図表示（MapLibre ソース/レイヤ定義）
+8. [x] T07-MAP-BASE: 現状ネットワークの地図表示（MapLibre ソース/レイヤ定義）
    - DoD: 取込直後に地図へ路線/停留所が描画される
    - 参照: docs/ui-layout.md
+   - メモ(2025-11-06): MapLibre GL で路線・停留所をGeoJSONソースとして描画し、GTFS読込後に自動フィットするマップを実装
 
 ## フェーズ1: データ/スキーマ
 
-9. [ ] T10-SCHEMA: JSON スキーマ定義（GTFS簡易、乗降、候補、評価結果）
+9. [x] T10-SCHEMA: JSON スキーマ定義（GTFS簡易、乗降、候補、評価結果）
    - DoD: `zod` スキーマと型が揃う
    - 参照: docs/data-schemas.md
+   - メモ(2025-11-06): `src/shared/types` にNetwork/Candidate/KPI/SDT進捗のZodスキーマを作成、既存GTFS型を再エクスポートして整合性を確保
 10. [ ] T11-SAMPLE: サンプルデータ配置（`sample-data/` 一式）
    - DoD: 最小のネットワーク/候補/評価例で画面が動く
    - 参照: docs/data-schemas.md

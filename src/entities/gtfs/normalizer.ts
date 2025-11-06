@@ -1,6 +1,11 @@
-import type { LineString } from 'geojson'
 import type { GtfsImportResult } from './parser'
-import type { Network, Route, Stop, Usage } from './types'
+import type {
+  LineString,
+  Network,
+  Route,
+  Stop,
+  Usage,
+} from './types'
 
 function toFloat(value: string | undefined, fallback = 0) {
   if (!value) return fallback
@@ -48,7 +53,7 @@ function buildGeometryFromShapes(
     )
   if (records.length === 0) return null
 
-  const coordinates = records.map((shape) => [
+  const coordinates = records.map<[number, number]>((shape) => [
     toFloat(shape.shape_pt_lon),
     toFloat(shape.shape_pt_lat),
   ])

@@ -1,7 +1,27 @@
 import { Button } from '@/components/ui/button'
 import { GtfsUploadPanel } from '@/widgets/gtfs-upload-panel'
+import { NetworkMap } from '@/widgets/network-map'
+import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
 
 export function AppShell() {
+  const { status, summary } = useGtfsUploadStore((state) => ({
+    status: state.status,
+    summary: state.summary,
+  }))
+
+  const statusLabel = (() => {
+    switch (status) {
+      case 'reading':
+        return '解析中'
+      case 'ready':
+        return '表示中'
+      case 'error':
+        return 'エラー'
+      default:
+        return '未読込'
+    }
+  })()
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border px-6 py-4">
@@ -47,13 +67,22 @@ export function AppShell() {
         </section>
 
         <section className="flex flex-col rounded-lg border border-border bg-card/40 p-4">
-          <header className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">
-              地図ビュー
-            </h2>
-            <span className="text-xs text-muted-foreground">準備中</span>
+          <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                地図ビュー
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {summary
+                  ? `${summary.routeCount.toLocaleString()}系統 / ${summary.stopCount.toLocaleString()}停留所 / ${summary.shapeCount.toLocaleString()}経路点`
+                  : 'GTFSを読み込むと現状ネットワークを表示します'}
+              </p>
+            </div>
+            <span className="text-xs text-muted-foreground">{statusLabel}</span>
           </header>
-          <div className="mt-4 flex-1 rounded-md bg-muted/40 ring-1 ring-border/50" />
+          <div className="mt-4 flex min-h-[320px] flex-1">
+            <NetworkMap />
+          </div>
         </section>
 
         <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-card/40">
