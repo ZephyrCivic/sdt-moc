@@ -8,24 +8,25 @@
 
 ## フェーズ0: プロジェクト準備
 
-1. [ ] T00-ENV: 開発環境準備（Node LTS / pnpm or npm / Git）
+1. [x] T00-ENV: 開発環境準備（Node LTS / pnpm or npm / Git）
    - DoD: `node -v` と `pnpm -v` が通る
    - 参照: docs/project-setup.md
-2. [ ] T01-INIT: Vite + React + TypeScript プロジェクト初期化
+2. [x] T01-INIT: Vite + React + TypeScript プロジェクト初期化
    - DoD: `pnpm dev` で空の画面が起動
    - 参照: docs/project-setup.md
-3. [ ] T02-DEPS: 依存導入（MapLibre GL JS, Zustand, MSW, Zod, React Router, Tailwind）
+3. [x] T02-DEPS: 依存導入（MapLibre GL JS, Zustand, MSW, Zod, React Router, Tailwind）
    - DoD: 依存が `package.json` に入りビルド成功
    - 参照: docs/architecture.md, docs/project-setup.md
-4. [ ] T03-STRUCT: ディレクトリ構成作成（`src/app`, `src/pages`, `src/widgets`, `src/entities`, `src/shared`）
+4. [x] T03-STRUCT: ディレクトリ構成作成（`src/app`, `src/pages`, `src/widgets`, `src/entities`, `src/shared`）
    - DoD: 既定のフォルダ/エイリアス解決
    - 参照: docs/architecture.md
-5. [ ] T04-SHADCN: Tailwind + shadcn/ui 初期化と必須コンポーネント導入（button/badge/card/tooltip/skeleton/toggle/switch/progress/separator）
+5. [x] T04-SHADCN: Tailwind + shadcn/ui 初期化と必須コンポーネント導入（button/badge/card/tooltip/skeleton/toggle/switch/progress/separator）
    - DoD: `src/components/ui/*` が生成され UI パーツが使用可能
    - 参照: docs/project-setup.md, docs/ui-layout.md
-6. [ ] T05-GTFS-UPLOAD: GTFS ZIP アップロードUI（ファイル入力/ドラッグ&ドロップ）
+6. [~] T05-GTFS-UPLOAD: GTFS ZIP アップロードUI（ファイル入力/ドラッグ&ドロップ）
    - DoD: `AllLines-20250401_群馬中央バス株式会社.zip` を読み込める
    - 参照: docs/gtfs-import.md
+   - メモ(2025-11-06): GTFSアップロードUI骨格とZustandストアを作成
 7. [ ] T06-GTFS-PARSE: クライアントで ZIP 解凍→CSV 解析→`Network` 生成（fflate + papaparse）
    - DoD: 路線（LineString）と停留所（Point）が Network として得られる（shapes 無い場合は簡略線）
    - 参照: docs/gtfs-import.md, docs/data-schemas.md
@@ -53,9 +54,10 @@
 
 ## フェーズ3: 候補生成（モック）
 
-12. [ ] T30-GEN-API: 「シナリオ抽出」モック API 実装（同期: 10案返却）
+12. [~] T30-GEN-API: 「シナリオ抽出」モック API 実装（同期: 10案返却）
    - DoD: クリックで10カード出現、各カードに1行理由・未評価バッジ
    - 参照: docs/mock-api.md, docs/reason-phrases.md, docs/diversity-rules.md
+   - メモ(2025-11-06): MSW初期化と基本ハンドラ雛形を追加
 13. [ ] T31-DIVERSITY: 多様性ルール適用（空間/施策/強度×摂動）
    - DoD: 類似案に差分注記、ツールチップでフラグ確認可
    - 参照: docs/diversity-rules.md
