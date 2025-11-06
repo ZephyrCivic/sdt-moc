@@ -42,9 +42,10 @@
    - DoD: `zod` スキーマと型が揃う
    - 参照: docs/data-schemas.md
    - メモ(2025-11-06): `src/shared/types` にNetwork/Candidate/KPI/SDT進捗のZodスキーマを作成、既存GTFS型を再エクスポートして整合性を確保
-10. [ ] T11-SAMPLE: サンプルデータ配置（`sample-data/` 一式）
+10. [x] T11-SAMPLE: サンプルデータ配置（`sample-data/` 一式）
    - DoD: 最小のネットワーク/候補/評価例で画面が動く
    - 参照: docs/data-schemas.md
+   - メモ(2025-11-06): Zodスキーマ準拠のサンプルネットワーク・候補・進捗データをTS定数化し、左カラムから読み込めるショートカットを実装
 
 ## フェーズ2: 画面レイアウト（単一ページ・三カラム）
 

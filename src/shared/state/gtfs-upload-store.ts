@@ -9,6 +9,10 @@ import {
 } from '@/entities/gtfs/parser'
 import { buildNetwork } from '@/entities/gtfs/normalizer'
 import type { Network } from '@/entities/gtfs/types'
+import {
+  sampleGtfsSummary,
+  sampleNetwork,
+} from '@/shared/data/sample-data'
 
 type UploadStatus = 'idle' | 'ready' | 'reading' | 'error'
 
@@ -26,6 +30,7 @@ export interface GtfsUploadState {
   setStatus: (status: UploadStatus) => void
   setError: (message: string | null) => void
   loadGtfs: () => Promise<void>
+  loadSampleNetwork: () => void
   reset: () => void
 }
 
@@ -114,6 +119,17 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
         })
       }
     },
+    loadSampleNetwork: () =>
+      set((state) => {
+        state.file = null
+        state.data = null
+        state.summary = sampleGtfsSummary
+        state.network = sampleNetwork
+        state.status = 'ready'
+        state.error = null
+        state.lastUpdatedAt = Date.now()
+        state.encoding = 'auto'
+      }),
     reset: () => set(() => ({ ...initialState })),
   })),
 )

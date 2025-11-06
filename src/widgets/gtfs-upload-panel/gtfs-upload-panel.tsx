@@ -73,7 +73,7 @@ export function GtfsUploadPanel() {
         [],
       ),
     )
-  const { setFile, setEncoding, setError, reset, loadGtfs } =
+  const { setFile, setEncoding, setError, reset, loadGtfs, loadSampleNetwork } =
     useGtfsUploadStore(
       useCallback(
         (state) => ({
@@ -82,6 +82,7 @@ export function GtfsUploadPanel() {
           setError: state.setError,
           reset: state.reset,
           loadGtfs: state.loadGtfs,
+          loadSampleNetwork: state.loadSampleNetwork,
         }),
         [],
       ),
@@ -149,6 +150,13 @@ export function GtfsUploadPanel() {
 
   const handleLoad = () => {
     void loadGtfs()
+  }
+
+  const handleLoadSample = () => {
+    loadSampleNetwork()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   return (
@@ -233,23 +241,34 @@ export function GtfsUploadPanel() {
             <option value="shift_jis">Shift_JIS 固定</option>
           </select>
         </div>
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
           <Button
             type="button"
-            variant="outline"
-            disabled={!file || status === 'reading'}
-            onClick={handleLoad}
+            variant="ghost"
+            className="px-2 py-0 text-xs"
+            disabled={status === 'reading'}
+            onClick={handleLoadSample}
           >
-            GTFSを読み込む
+            サンプルデータを読み込む
           </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={!file}
-            onClick={handleReset}
-          >
-            クリア
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={!file || status === 'reading'}
+              onClick={handleLoad}
+            >
+              GTFSを読み込む
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={!file}
+              onClick={handleReset}
+            >
+              クリア
+            </Button>
+          </div>
         </div>
       </div>
 
