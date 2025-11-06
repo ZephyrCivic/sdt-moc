@@ -44,9 +44,9 @@ function StatusBadge() {
   const label = useMemo(() => {
     switch (status) {
       case 'ready':
-        return { text: 'ファイル準備完了', variant: 'secondary' as const }
+        return { text: '読み込み完了', variant: 'secondary' as const }
       case 'reading':
-        return { text: '読み込み中', variant: 'outline' as const }
+        return { text: '解析中', variant: 'outline' as const }
       case 'error':
         return { text: 'エラー', variant: 'destructive' as const }
       default:
@@ -59,28 +59,33 @@ function StatusBadge() {
 
 export function GtfsUploadPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { file, encoding, error, lastUpdatedAt } = useGtfsUploadStore(
-    useCallback(
-      (state) => ({
-        file: state.file,
-        encoding: state.encoding,
-        error: state.error,
-        lastUpdatedAt: state.lastUpdatedAt,
-      }),
-      [],
-    ),
-  )
-  const { setFile, setEncoding, setError, reset } = useGtfsUploadStore(
-    useCallback(
-      (state) => ({
-        setFile: state.setFile,
-        setEncoding: state.setEncoding,
-        setError: state.setError,
-        reset: state.reset,
-      }),
-      [],
-    ),
-  )
+  const { file, encoding, error, lastUpdatedAt, summary, status } =
+    useGtfsUploadStore(
+      useCallback(
+        (state) => ({
+          file: state.file,
+          encoding: state.encoding,
+          error: state.error,
+          lastUpdatedAt: state.lastUpdatedAt,
+          summary: state.summary,
+          status: state.status,
+        }),
+        [],
+      ),
+    )
+  const { setFile, setEncoding, setError, reset, loadGtfs } =
+    useGtfsUploadStore(
+      useCallback(
+        (state) => ({
+          setFile: state.setFile,
+          setEncoding: state.setEncoding,
+          setError: state.setError,
+          reset: state.reset,
+          loadGtfs: state.loadGtfs,
+        }),
+        [],
+      ),
+    )
 
   const handleBrowseClick = () => {
     fileInputRef.current?.click()
@@ -142,6 +147,10 @@ export function GtfsUploadPanel() {
     }
   }
 
+  const handleLoad = () => {
+    void loadGtfs()
+  }
+
   return (
     <section className="flex flex-col gap-4">
       <header className="flex items-center justify-between gap-2">
@@ -189,7 +198,7 @@ export function GtfsUploadPanel() {
 
       <div className="space-y-3 rounded-lg border border-border bg-card/60 p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">選択ファイル</span>
+          <span className="text-muted-foreground">選択中のファイル</span>
           <span className="font-medium">
             {file ? file.name : '未選択'}
           </span>
@@ -227,6 +236,14 @@ export function GtfsUploadPanel() {
         <div className="flex justify-end gap-2 pt-2">
           <Button
             type="button"
+            variant="outline"
+            disabled={!file || status === 'reading'}
+            onClick={handleLoad}
+          >
+            GTFSを読み込む
+          </Button>
+          <Button
+            type="button"
             variant="secondary"
             disabled={!file}
             onClick={handleReset}
@@ -236,13 +253,31 @@ export function GtfsUploadPanel() {
         </div>
       </div>
 
+      {summary ? (
+        <div className="rounded-lg border border-border bg-background/70 p-3 text-xs">
+          <p className="font-semibold text-foreground">読み込み結果</p>
+          <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1">
+            <dt className="text-muted-foreground">停留所</dt>
+            <dd>{summary.stopCount.toLocaleString()}</dd>
+            <dt className="text-muted-foreground">系統</dt>
+            <dd>{summary.routeCount.toLocaleString()}</dd>
+            <dt className="text-muted-foreground">便</dt>
+            <dd>{summary.tripCount.toLocaleString()}</dd>
+            <dt className="text-muted-foreground">経路点</dt>
+            <dd>{summary.shapeCount.toLocaleString()}</dd>
+            <dt className="text-muted-foreground">停留所時刻</dt>
+            <dd>{summary.stopTimeCount.toLocaleString()}</dd>
+          </dl>
+        </div>
+      ) : null}
+
       {error ? (
         <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
           {error}
         </p>
       ) : (
         <p className="text-xs text-muted-foreground">
-          ファイルを選択すると「シナリオ生成」ボタンが有効になります。
+          読み込み完了後にシナリオ生成ボタンが有効になります。
         </p>
       )}
     </section>
