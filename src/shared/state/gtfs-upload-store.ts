@@ -1,11 +1,14 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import type { GtfsEncoding } from '@/entities/gtfs/schema'
-import { parseGtfsZip, summarizeGtfs } from '@/entities/gtfs/parser'
-import type {
-  GtfsImportResult,
-  GtfsImportSummary,
+import {
+  parseGtfsZip,
+  summarizeGtfs,
+  type GtfsImportResult,
+  type GtfsImportSummary,
 } from '@/entities/gtfs/parser'
+import { buildNetwork } from '@/entities/gtfs/normalizer'
+import type { Network } from '@/entities/gtfs/types'
 
 type UploadStatus = 'idle' | 'ready' | 'reading' | 'error'
 
@@ -17,6 +20,7 @@ export interface GtfsUploadState {
   lastUpdatedAt: number | null
   data: GtfsImportResult | null
   summary: GtfsImportSummary | null
+  network: Network | null
   setFile: (file: File | null) => void
   setEncoding: (encoding: GtfsEncoding) => void
   setStatus: (status: UploadStatus) => void
@@ -34,6 +38,7 @@ const initialState: Pick<
   | 'lastUpdatedAt'
   | 'data'
   | 'summary'
+  | 'network'
 > = {
   file: null,
   encoding: 'auto',
@@ -42,6 +47,7 @@ const initialState: Pick<
   lastUpdatedAt: null,
   data: null,
   summary: null,
+  network: null,
 }
 
 export const useGtfsUploadStore = create<GtfsUploadState>()(
@@ -54,6 +60,7 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
         state.error = null
         state.data = null
         state.summary = null
+        state.network = null
         state.lastUpdatedAt = file ? Date.now() : state.lastUpdatedAt
       }),
     setEncoding: (encoding) =>
@@ -90,9 +97,11 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
       try {
         const parsed = await parseGtfsZip(file, encoding)
         const summary = summarizeGtfs(parsed)
+        const network = buildNetwork(parsed)
         set((state) => {
           state.data = parsed
           state.summary = summary
+          state.network = network
           state.status = 'ready'
           state.lastUpdatedAt = Date.now()
         })

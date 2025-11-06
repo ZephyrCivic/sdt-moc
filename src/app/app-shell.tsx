@@ -8,7 +8,7 @@ export function AppShell() {
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold">MLIT UI Mock</h1>
           <p className="text-sm text-muted-foreground">
-            GTFS取込→候補生成→SDT評価→推奨抽出の一気通貫デモ
+            GTFS取込から候補生成・SDT評価・推奨抽出までを一気通貫で確認するデモ
           </p>
         </div>
       </header>
@@ -23,7 +23,7 @@ export function AppShell() {
                 優先KPIの選択
               </h2>
               <p className="text-xs text-muted-foreground">
-                カバレッジ率・運行コストなど、主要指標を1つ選んでください。
+                カバレッジ率や運行コストなど、主要指標を1つ選んでください。
               </p>
             </header>
             <div className="rounded-lg border border-dashed border-border bg-background/50 p-4 text-sm text-muted-foreground">
@@ -37,7 +37,7 @@ export function AppShell() {
                 シナリオ生成
               </h2>
               <p className="text-xs text-muted-foreground">
-                GTFSロード完了後に10案を生成し、SDT評価へ送信します。
+                GTFSを読み込んだ後に10案を生成し、SDT評価へ送信します。
               </p>
             </header>
             <Button className="w-full" disabled>
@@ -62,7 +62,7 @@ export function AppShell() {
               候補シナリオ一覧
             </h2>
             <p className="text-xs text-muted-foreground">
-              生成後に10件のカードを表示し、多様性ルールを視覚化します。
+              生成後に10件のカードを表示し、多様性ルールを可視化します。
             </p>
           </div>
           <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3 text-sm text-muted-foreground">

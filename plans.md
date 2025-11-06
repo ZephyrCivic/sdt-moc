@@ -23,13 +23,14 @@
 5. [x] T04-SHADCN: Tailwind + shadcn/ui 初期化と必須コンポーネント導入（button/badge/card/tooltip/skeleton/toggle/switch/progress/separator）
    - DoD: `src/components/ui/*` が生成され UI パーツが使用可能
    - 参照: docs/project-setup.md, docs/ui-layout.md
-6. [~] T05-GTFS-UPLOAD: GTFS ZIP アップロードUI（ファイル入力/ドラッグ&ドロップ）
+6. [x] T05-GTFS-UPLOAD: GTFS ZIP アップロードUI（ファイル入力/ドラッグ&ドロップ）
    - DoD: `AllLines-20250401_群馬中央バス株式会社.zip` を読み込める
    - 参照: docs/gtfs-import.md
-   - メモ(2025-11-06): GTFSアップロードUI骨格とZustandストアを作成
-7. [ ] T06-GTFS-PARSE: クライアントで ZIP 解凍→CSV 解析→`Network` 生成（fflate + papaparse）
+   - メモ(2025-11-06): GTFSアップロードUI骨格＋Zustandストアに加え、ZIP解析・サマリー表示を実装
+7. [x] T06-GTFS-PARSE: クライアントで ZIP 解凍→CSV 解析→`Network` 生成（fflate + papaparse）
    - DoD: 路線（LineString）と停留所（Point）が Network として得られる（shapes 無い場合は簡略線）
    - 参照: docs/gtfs-import.md, docs/data-schemas.md
+   - メモ(2025-11-06): ZIP展開→CSV解析→Network整形ロジックを実装（LineString/StopTime補完対応）
 8. [ ] T07-MAP-BASE: 現状ネットワークの地図表示（MapLibre ソース/レイヤ定義）
    - DoD: 取込直後に地図へ路線/停留所が描画される
    - 参照: docs/ui-layout.md
@@ -57,7 +58,7 @@
 12. [~] T30-GEN-API: 「シナリオ抽出」モック API 実装（同期: 10案返却）
    - DoD: クリックで10カード出現、各カードに1行理由・未評価バッジ
    - 参照: docs/mock-api.md, docs/reason-phrases.md, docs/diversity-rules.md
-   - メモ(2025-11-06): MSW初期化と基本ハンドラ雛形を追加
+   - メモ(2025-11-06): MSW初期化＋生成/評価/SSEハンドラを実装（候補10件モック生成）
 13. [ ] T31-DIVERSITY: 多様性ルール適用（空間/施策/強度×摂動）
    - DoD: 類似案に差分注記、ツールチップでフラグ確認可
    - 参照: docs/diversity-rules.md
