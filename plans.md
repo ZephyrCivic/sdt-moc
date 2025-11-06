@@ -29,19 +29,22 @@
 7. [ ] T06-GTFS-PARSE: クライアントで ZIP 解凍→CSV 解析→`Network` 生成（fflate + papaparse）
    - DoD: 路線（LineString）と停留所（Point）が Network として得られる（shapes 無い場合は簡略線）
    - 参照: docs/gtfs-import.md, docs/data-schemas.md
+8. [ ] T07-MAP-BASE: 現状ネットワークの地図表示（MapLibre ソース/レイヤ定義）
+   - DoD: 取込直後に地図へ路線/停留所が描画される
+   - 参照: docs/ui-layout.md
 
 ## フェーズ1: データ/スキーマ
 
-8. [ ] T10-SCHEMA: JSON スキーマ定義（GTFS簡易、乗降、候補、評価結果）
+9. [ ] T10-SCHEMA: JSON スキーマ定義（GTFS簡易、乗降、候補、評価結果）
    - DoD: `zod` スキーマと型が揃う
    - 参照: docs/data-schemas.md
-9. [ ] T11-SAMPLE: サンプルデータ配置（`sample-data/` 一式）
+10. [ ] T11-SAMPLE: サンプルデータ配置（`sample-data/` 一式）
    - DoD: 最小のネットワーク/候補/評価例で画面が動く
    - 参照: docs/data-schemas.md
 
 ## フェーズ2: 画面レイアウト（単一ページ・三カラム）
 
-10. [ ] T20-LAYOUT: 3カラム骨格（左=入力/中央=地図/右=候補フィード）
+11. [ ] T20-LAYOUT: 3カラム骨格（左=入力/中央=地図/右=候補フィード）
    - DoD: レスポンシブで横3分割、固定ヘッダなし
    - 参照: docs/ui-layout.md
 11. [ ] T21-LABELS: ラベル/表記統一（ボタン/バッジ/ツールチップ）

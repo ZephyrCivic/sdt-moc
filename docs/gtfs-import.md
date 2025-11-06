@@ -23,6 +23,7 @@
 
 - ZIP 解凍: `fflate`（軽量・ブラウザ対応）
 - CSV 解析: `papaparse`
+- 文字コード: UTF-8/Shift_JIS の自動判定（UI実装でも fallback 実装を入れる）
 
 ## 型マッピング
 
@@ -68,3 +69,22 @@ export async function parseGtfsZip(file: File): Promise<Network> {
 - ローカルでの検証を容易にするため、`gtfs_data/` に ZIP を置けるようにする
 - `.gitignore` で `gtfs_data/*.zip` を除外
 
+## CLI でのシナリオ自動生成（10案）
+
+GTFS をベースに 10 案の候補を生成するスクリプトを用意しています。
+
+```
+pnpm i
+pnpm gen:scenarios
+```
+
+- 入力: `gtfs_data/AllLines-20250401_群馬中央バス株式会社.zip`
+- 出力: `sample-data/candidates.generated.json`
+
+生成ロジックの方針:
+- 区間短縮（始端/終端の3–5停留所）
+- 停留所統廃合（120m以内の近接ペア）
+- 減便（trip数が多い路線）
+- DRTゾーン（外縁部に中規模ポリゴン）
+
+UI モックの「シナリオ抽出」モックAPIは、この生成ファイルを読み込む実装に差し替え可能です。

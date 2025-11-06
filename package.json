@@ -1,0 +1,16 @@
+{
+  "name": "mlit-ui-mock",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:scenarios": "node scripts/generate_scenarios.mjs gtfs_data/AllLines-20250401_群馬中央バス株式会社.zip sample-data/candidates.generated.json",
+    "eval:scenarios": "node scripts/evaluate_scenarios.mjs sample-data/candidates.generated.json sample-data/candidates.evaluated.json",
+    "rec:top3": "node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json coverageRate sample-data/top3.coverage.json && node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json operatingCost sample-data/top3.cost.json"
+  },
+  "dependencies": {
+    "fflate": "^0.8.1",
+    "iconv-lite": "^0.6.3",
+    "papaparse": "^5.4.1"
+  }
+}
