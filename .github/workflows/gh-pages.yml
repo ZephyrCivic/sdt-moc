@@ -21,13 +21,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-          run_install: true
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
       - name: Build
-        run: pnpm build
+        run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -42,4 +40,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
