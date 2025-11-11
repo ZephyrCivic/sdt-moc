@@ -7,7 +7,6 @@ import { useScenarioStore, type ScenarioStatus } from '@/shared/state/scenario-s
 import {
   useScenarioControlsStore,
   type ScenarioFilter,
-  type ScenarioSortMode,
 } from '@/shared/state/scenario-controls-store'
 import { KPI_PRIORITY_ORDER, type KpiKey } from '@/shared/types/kpi'
 

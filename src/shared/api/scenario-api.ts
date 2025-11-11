@@ -1,5 +1,5 @@
 import { candidateSchema } from '@/shared/types/candidate'
-import type { Candidate, CandidateId } from '@/shared/types/candidate'
+import type { CandidateId } from '@/shared/types/candidate'
 import type { KpiKey } from '@/shared/types/kpi'
 import {
   sdtProgressEventSchema,

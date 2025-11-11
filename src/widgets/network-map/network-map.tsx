@@ -15,6 +15,7 @@ import {
   getHighlightedCandidate,
   useScenarioStore,
 } from '@/shared/state/scenario-store'
+import { useShallow } from 'zustand/react/shallow'
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json'
 const ROUTES_SOURCE_ID = 'network-routes'
@@ -28,6 +29,7 @@ const CANDIDATE_POINT_LAYER_ID = 'candidate-point-layer'
 const CANDIDATE_POLYGON_SOURCE_ID = 'candidate-polygon'
 const CANDIDATE_POLYGON_LAYER_ID = 'candidate-polygon-layer'
 const CANDIDATE_POLYGON_OUTLINE_LAYER_ID = 'candidate-polygon-outline-layer'
+const EMPTY_ANNOTATIONS: Annotation[] = []
 
 const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
   type: 'FeatureCollection',
@@ -155,17 +157,29 @@ function toAnnotationCollections(annotations: Annotation[]) {
   const polygonFeatures: Feature<Polygon>[] = []
 
   annotations.forEach((annotation, index) => {
-    const feature = {
-      ...annotation.feature,
+    const baseFeature = {
+      type: 'Feature' as const,
       id: `${annotation.kind}-${index}`,
-    } as Feature
+      properties: {
+        note: annotation.note ?? null,
+      },
+    }
 
     if (annotation.kind === 'line') {
-      lineFeatures.push(feature as Feature<LineString>)
+      lineFeatures.push({
+        ...baseFeature,
+        geometry: annotation.feature as LineString,
+      })
     } else if (annotation.kind === 'point') {
-      pointFeatures.push(feature as Feature<Point>)
+      pointFeatures.push({
+        ...baseFeature,
+        geometry: annotation.feature as Point,
+      })
     } else if (annotation.kind === 'polygon') {
-      polygonFeatures.push(feature as Feature<Polygon>)
+      polygonFeatures.push({
+        ...baseFeature,
+        geometry: annotation.feature as Polygon,
+      })
     }
   })
 
@@ -203,13 +217,15 @@ export function NetworkMap() {
   const mapRef = useRef<Map | null>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const [mapReady, setMapReady] = useState(false)
-  const { network, status } = useGtfsUploadStore((state) => ({
-    network: state.network,
-    status: state.status,
-  }))
+  const { network, status } = useGtfsUploadStore(
+    useShallow((state) => ({
+      network: state.network,
+      status: state.status,
+    })),
+  )
   const annotations = useScenarioStore((state) => {
     const candidate = getHighlightedCandidate(state)
-    return candidate?.annotations ?? []
+    return candidate?.annotations ?? EMPTY_ANNOTATIONS
   })
 
   const placeholderMessage = useMemo(() => {
@@ -233,7 +249,6 @@ export function NetworkMap() {
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: MAP_STYLE_URL,
-      attributionControl: true,
       locale: {
         'NavigationControl.ZoomIn': 'ズームイン',
         'NavigationControl.ZoomOut': 'ズームアウト',

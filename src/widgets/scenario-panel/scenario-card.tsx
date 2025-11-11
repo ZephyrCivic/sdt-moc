@@ -71,6 +71,10 @@ export function ScenarioCard({
 
   return (
     <Card
+      data-testid="scenario-card"
+      data-candidate-id={candidate.id}
+      data-status={candidate.status}
+      data-recommended={candidate.recommended ? 'true' : 'false'}
       role="button"
       tabIndex={0}
       onClick={() => onSelect(candidate.id)}

@@ -10,7 +10,7 @@ export interface MockCandidate {
   id: string
   title: string
   reason: string
-  measure: '減便' | '停留所統合' | '区間短縮' | 'DRT導入'
+  measure: '減便' | '停留所統廃合' | '区間短縮' | 'DRT導入'
   strength: '弱' | '中' | '強'
   annotations: Array<{
     kind: 'line' | 'point' | 'polygon'

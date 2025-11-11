@@ -6,12 +6,15 @@ import { ScenarioPanel } from '@/widgets/scenario-panel'
 import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
 import { useScenarioControlsStore } from '@/shared/state/scenario-controls-store'
 import { useScenarioStore } from '@/shared/state/scenario-store'
+import { useShallow } from 'zustand/react/shallow'
 
 export function AppShell() {
-  const { status: gtfsStatus, summary } = useGtfsUploadStore((state) => ({
-    status: state.status,
-    summary: state.summary,
-  }))
+  const { gtfsStatus, summary } = useGtfsUploadStore(
+    useShallow((state) => ({
+      gtfsStatus: state.status,
+      summary: state.summary,
+    })),
+  )
   const priorityKpi = useScenarioControlsStore((state) => state.priorityKpi)
   const scenarioStatus = useScenarioStore((state) => state.status)
   const scenarioError = useScenarioStore((state) => state.error)

@@ -1358,9 +1358,9 @@
     },
     {
       "id": "C09",
-      "title": "外縁DRTゾーン",
-      "reason": "低密度想定 × 外縁部 × DRTゾーン",
-      "measure": "DRTゾーン",
+      "title": "外縁DRT導入",
+      "reason": "低密度想定 × 外縁部 × DRT導入",
+      "measure": "DRT導入",
       "strength": "中",
       "annotations": [
         {
@@ -1403,9 +1403,9 @@
     },
     {
       "id": "C10",
-      "title": "外縁DRTゾーン",
-      "reason": "低密度想定 × 外縁部 × DRTゾーン",
-      "measure": "DRTゾーン",
+      "title": "外縁DRT導入",
+      "reason": "低密度想定 × 外縁部 × DRT導入",
+      "measure": "DRT導入",
       "strength": "中",
       "annotations": [
         {

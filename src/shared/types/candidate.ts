@@ -12,7 +12,7 @@ export const measureSchema = z.enum([
   '減便',
   '停留所統廃合',
   '区間短縮',
-  'DRTゾーン',
+  'DRT導入',
 ])
 
 export const strengthSchema = z.enum(['弱', '中', '強'])

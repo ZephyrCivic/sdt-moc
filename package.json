@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "gen:scenarios": "node scripts/generate_scenarios.mjs gtfs_data/AllLines-20250401_�Q�n�����o�X�������.zip sample-data/candidates.generated.json",
     "eval:scenarios": "node scripts/evaluate_scenarios.mjs sample-data/candidates.generated.json sample-data/candidates.evaluated.json",
-    "rec:top3": "node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json coverageRate sample-data/top3.coverage.json && node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json operatingCost sample-data/top3.cost.json"
+    "rec:top3": "node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json coverageRate sample-data/top3.coverage.json && node scripts/recommend_top3.mjs sample-data/candidates.evaluated.json operatingCost sample-data/top3.cost.json",
+    "test:e2e": "cross-env VITE_USE_MOCK=false npm run build && cross-env PLAYWRIGHT_MODE=preview VITE_USE_MOCK=false playwright test"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.8",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.56.1",
     "@types/geojson": "^7946.0.16",
     "@types/maplibre-gl": "^1.13.2",
     "@types/node": "^24.6.0",
@@ -46,6 +48,7 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",

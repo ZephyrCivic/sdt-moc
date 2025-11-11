@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
 import type { GtfsEncoding } from '@/entities/gtfs/schema'
+import { useShallow } from 'zustand/react/shallow'
 
 const ACCEPTED_EXTENSIONS = ['.zip']
 const ACCEPTED_MIME_TYPES = [
@@ -61,31 +62,25 @@ export function GtfsUploadPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { file, encoding, error, lastUpdatedAt, summary, status } =
     useGtfsUploadStore(
-      useCallback(
-        (state) => ({
-          file: state.file,
-          encoding: state.encoding,
-          error: state.error,
-          lastUpdatedAt: state.lastUpdatedAt,
-          summary: state.summary,
-          status: state.status,
-        }),
-        [],
-      ),
+      useShallow((state) => ({
+        file: state.file,
+        encoding: state.encoding,
+        error: state.error,
+        lastUpdatedAt: state.lastUpdatedAt,
+        summary: state.summary,
+        status: state.status,
+      })),
     )
   const { setFile, setEncoding, setError, reset, loadGtfs, loadSampleNetwork } =
     useGtfsUploadStore(
-      useCallback(
-        (state) => ({
-          setFile: state.setFile,
-          setEncoding: state.setEncoding,
-          setError: state.setError,
-          reset: state.reset,
-          loadGtfs: state.loadGtfs,
-          loadSampleNetwork: state.loadSampleNetwork,
-        }),
-        [],
-      ),
+      useShallow((state) => ({
+        setFile: state.setFile,
+        setEncoding: state.setEncoding,
+        setError: state.setError,
+        reset: state.reset,
+        loadGtfs: state.loadGtfs,
+        loadSampleNetwork: state.loadSampleNetwork,
+      })),
     )
 
   const handleBrowseClick = () => {
