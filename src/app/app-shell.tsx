@@ -6,6 +6,7 @@ import { ScenarioPanel } from '@/widgets/scenario-panel'
 import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
 import { useScenarioControlsStore } from '@/shared/state/scenario-controls-store'
 import { useScenarioStore } from '@/shared/state/scenario-store'
+import { ImprovementAreaPanel } from '@/widgets/improvement-area-panel/improvement-area-panel'
 import { useShallow } from 'zustand/react/shallow'
 
 export function AppShell() {
@@ -83,6 +84,7 @@ export function AppShell() {
         <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-border bg-card/40 p-4">
           <GtfsUploadPanel />
           <PriorityKpiSelect />
+          <ImprovementAreaPanel />
           <section className="space-y-3 rounded-lg border border-dashed border-border bg-background/40 p-3">
             <p className="text-sm font-semibold">シナリオ抽出</p>
             <p className="text-xs text-muted-foreground">

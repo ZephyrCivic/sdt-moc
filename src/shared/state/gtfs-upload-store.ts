@@ -13,6 +13,10 @@ import {
   sampleGtfsSummary,
   sampleNetwork,
 } from '@/shared/data/sample-data'
+import {
+  buildMeshScores,
+  type MeshScore,
+} from '@/shared/lib/mesh-grid'
 
 type UploadStatus = 'idle' | 'ready' | 'reading' | 'error'
 
@@ -25,12 +29,15 @@ export interface GtfsUploadState {
   data: GtfsImportResult | null
   summary: GtfsImportSummary | null
   network: Network | null
+  meshScores: MeshScore[]
+  activeMeshCellId: string | null
   setFile: (file: File | null) => void
   setEncoding: (encoding: GtfsEncoding) => void
   setStatus: (status: UploadStatus) => void
   setError: (message: string | null) => void
   loadGtfs: () => Promise<void>
   loadSampleNetwork: () => void
+  setActiveMeshCell: (cellId: string | null) => void
   reset: () => void
 }
 
@@ -44,6 +51,8 @@ const initialState: Pick<
   | 'data'
   | 'summary'
   | 'network'
+  | 'meshScores'
+  | 'activeMeshCellId'
 > = {
   file: null,
   encoding: 'auto',
@@ -53,6 +62,8 @@ const initialState: Pick<
   data: null,
   summary: null,
   network: null,
+  meshScores: [],
+  activeMeshCellId: null,
 }
 
 export const useGtfsUploadStore = create<GtfsUploadState>()(
@@ -66,6 +77,8 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
         state.data = null
         state.summary = null
         state.network = null
+        state.meshScores = []
+        state.activeMeshCellId = null
         state.lastUpdatedAt = file ? Date.now() : state.lastUpdatedAt
       }),
     setEncoding: (encoding) =>
@@ -107,6 +120,8 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
           state.data = parsed
           state.summary = summary
           state.network = network
+          state.meshScores = buildMeshScores(network)
+          state.activeMeshCellId = null
           state.status = 'ready'
           state.lastUpdatedAt = Date.now()
         })
@@ -125,10 +140,16 @@ export const useGtfsUploadStore = create<GtfsUploadState>()(
         state.data = null
         state.summary = sampleGtfsSummary
         state.network = sampleNetwork
+        state.meshScores = buildMeshScores(sampleNetwork)
+        state.activeMeshCellId = null
         state.status = 'ready'
         state.error = null
         state.lastUpdatedAt = Date.now()
         state.encoding = 'auto'
+      }),
+    setActiveMeshCell: (cellId) =>
+      set((state) => {
+        state.activeMeshCellId = cellId
       }),
     reset: () => set(() => ({ ...initialState })),
   })),

@@ -1,0 +1,2 @@
+﻿agency_id,agency_official_name,agency_zip_number,agency_address
+4000020403491,粕屋町,8112392,福岡県糟屋郡粕屋町駕与丁一丁目１番１号

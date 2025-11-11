@@ -1,0 +1,2 @@
+﻿agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone
+4000020403491,ふれあいバス（粕屋町福祉巡回バス）,http://www.town.kasuya.fukuoka.jp/kurashi/seikatsu/kotsu/index.html,Asia/Tokyo,ja,092-938-6844

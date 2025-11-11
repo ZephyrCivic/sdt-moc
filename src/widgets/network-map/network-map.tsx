@@ -16,6 +16,7 @@ import {
   useScenarioStore,
 } from '@/shared/state/scenario-store'
 import { useShallow } from 'zustand/react/shallow'
+import type { MeshScore } from '@/shared/lib/mesh-grid'
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json'
 const ROUTES_SOURCE_ID = 'network-routes'
@@ -29,6 +30,10 @@ const CANDIDATE_POINT_LAYER_ID = 'candidate-point-layer'
 const CANDIDATE_POLYGON_SOURCE_ID = 'candidate-polygon'
 const CANDIDATE_POLYGON_LAYER_ID = 'candidate-polygon-layer'
 const CANDIDATE_POLYGON_OUTLINE_LAYER_ID = 'candidate-polygon-outline-layer'
+const MESH_SOURCE_ID = 'mesh-cells'
+const MESH_FILL_LAYER_ID = 'mesh-cells-fill-layer'
+const MESH_BORDER_LAYER_ID = 'mesh-cells-border-layer'
+const MESH_HIGHLIGHT_LAYER_ID = 'mesh-cells-highlight-layer'
 const EMPTY_ANNOTATIONS: Annotation[] = []
 
 const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
@@ -199,6 +204,25 @@ function toAnnotationCollections(annotations: Annotation[]) {
   }
 }
 
+function toMeshFeatureCollection(meshScores: MeshScore[]) {
+  const features = meshScores.map<Feature<Polygon>>((cell) => ({
+    type: 'Feature',
+    id: cell.id,
+    properties: {
+      id: cell.id,
+      status: cell.status,
+      priority: cell.priority,
+      reason: cell.reason,
+      demandPerStop: cell.metrics.demandPerStop,
+    },
+    geometry: cell.polygon,
+  }))
+  return {
+    type: 'FeatureCollection' as const,
+    features,
+  }
+}
+
 function updateAnnotationLayers(map: Map, annotations: Annotation[]) {
   const { lines, points, polygons } = toAnnotationCollections(annotations)
   ;(map.getSource(CANDIDATE_LINE_SOURCE_ID) as GeoJSONSource | undefined)?.setData(
@@ -212,17 +236,35 @@ function updateAnnotationLayers(map: Map, annotations: Annotation[]) {
   )
 }
 
+function updateMeshLayer(map: Map, meshScores: MeshScore[]) {
+  const collection = toMeshFeatureCollection(meshScores)
+  ;(map.getSource(MESH_SOURCE_ID) as GeoJSONSource | undefined)?.setData(
+    collection,
+  )
+}
+
+function updateMeshHighlight(map: Map, cellId: string | null) {
+  const filter =
+    cellId == null ? ['==', ['get', 'id'], '__none'] : ['==', ['get', 'id'], cellId]
+  if (map.getLayer(MESH_HIGHLIGHT_LAYER_ID)) {
+    map.setFilter(MESH_HIGHLIGHT_LAYER_ID, filter as any)
+  }
+}
+
 export function NetworkMap() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const [mapReady, setMapReady] = useState(false)
-  const { network, status } = useGtfsUploadStore(
-    useShallow((state) => ({
-      network: state.network,
-      status: state.status,
-    })),
-  )
+  const { network, status, meshScores, activeMeshCellId } =
+    useGtfsUploadStore(
+      useShallow((state) => ({
+        network: state.network,
+        status: state.status,
+        meshScores: state.meshScores,
+        activeMeshCellId: state.activeMeshCellId,
+      })),
+    )
   const annotations = useScenarioStore((state) => {
     const candidate = getHighlightedCandidate(state)
     return candidate?.annotations ?? EMPTY_ANNOTATIONS
@@ -328,6 +370,10 @@ export function NetworkMap() {
         type: 'geojson',
         data: EMPTY_FEATURE_COLLECTION,
       })
+      map.addSource(MESH_SOURCE_ID, {
+        type: 'geojson',
+        data: EMPTY_FEATURE_COLLECTION,
+      })
 
       map.addLayer({
         id: CANDIDATE_POLYGON_LAYER_ID,
@@ -372,6 +418,51 @@ export function NetworkMap() {
           'circle-stroke-width': 2,
         },
       })
+      map.addLayer({
+        id: MESH_FILL_LAYER_ID,
+        type: 'fill',
+        source: MESH_SOURCE_ID,
+        paint: {
+          'fill-color': [
+            'match',
+            ['get', 'status'],
+            'improve',
+            '#f97316',
+            'watch',
+            '#facc15',
+            '#22c55e',
+          ],
+          'fill-opacity': [
+            'match',
+            ['get', 'status'],
+            'improve',
+            0.42,
+            'watch',
+            0.28,
+            0.12,
+          ],
+        },
+      })
+      map.addLayer({
+        id: MESH_BORDER_LAYER_ID,
+        type: 'line',
+        source: MESH_SOURCE_ID,
+        paint: {
+          'line-color': '#f97316',
+          'line-width': 1,
+          'line-opacity': 0.6,
+        },
+      })
+      map.addLayer({
+        id: MESH_HIGHLIGHT_LAYER_ID,
+        type: 'line',
+        source: MESH_SOURCE_ID,
+        paint: {
+          'line-color': '#f97316',
+          'line-width': 3,
+        },
+        filter: ['==', ['get', 'id'], '__none'],
+      })
 
       setMapReady(true)
     }
@@ -407,6 +498,20 @@ export function NetworkMap() {
     }
     updateAnnotationLayers(mapRef.current, annotations)
   }, [annotations, mapReady])
+
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) {
+      return
+    }
+    updateMeshLayer(mapRef.current, meshScores)
+  }, [meshScores, mapReady])
+
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) {
+      return
+    }
+    updateMeshHighlight(mapRef.current, activeMeshCellId)
+  }, [activeMeshCellId, mapReady])
 
   useEffect(() => {
     return () => {
