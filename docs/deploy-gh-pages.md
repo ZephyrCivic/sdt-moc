@@ -79,3 +79,5 @@ jobs:
 
 - Actions 成功後、`https://ZephyrCivic.github.io/sdt-moc/` へアクセス
 - ルーティングは SPA（クライアントサイド）。404 対策が必要なら `404.html` を `index.html` に転送する方式を検討
+
+

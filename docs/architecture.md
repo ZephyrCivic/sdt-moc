@@ -56,3 +56,5 @@ src/
 - `vite.config.ts` の `base` を `"/sdt-moc/"` に設定
 - GitHub Actions（Pages）で `pnpm build` → `dist` を公開
 - 追加資料: `docs/deploy-gh-pages.md`
+
+
