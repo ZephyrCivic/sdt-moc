@@ -1,0 +1,2 @@
+﻿agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+7070001000969,群馬中央バス株式会社,http://gunmachuobus.co.jp/,Asia/Tokyo,ja,027-267-1331,http://gunmachuobus.co.jp/publics/index/44/&anchor_link=page44#page44
