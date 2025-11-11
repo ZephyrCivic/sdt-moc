@@ -1,47 +1,59 @@
-# MLIT UI モック（shadcn/ui + Vite + Pages）
+# 福津市バスルート最適化シミュレーター
 
-- リポジトリ: https://github.com/ZephyrCivic/sdt-moc.git
-- 公開URL（GitHub Pages）: https://ZephyrCivic.github.io/sdt-moc/
+福津市の既存バス停データ（GTFS）と Gemini API を組み合わせ、改善余地の大きいエリアを可視化しながら最適ルート案を生成するシミュレーターです。キャンバス上で選択したエリアをもとにシナリオ候補を生成し、採用シナリオを比較できます。
 
-本プロジェクトは `docs/実装TODO表.md` に沿って実装を進めると、GTFS 読み込み→シナリオ抽出→SDT評価→推奨表示までの UI モックが完成します。
+## スタック
 
-## クイックリンク
+- React 19 + Vite 6（TypeScript）
+- Tailwind CSS CDN（軽量なテーマ適用のみ）
+- Google Gemini API（`@google/genai`）
 
-- 実装TODO表: `docs/実装TODO表.md`
-- 総覧ドキュメント: `docs/README.md`
-- デプロイ手順: `docs/deploy-gh-pages.md`
-- GTFS 取り込み仕様: `docs/gtfs-import.md`
+## ローカル開発
 
-## セットアップ（抜粋）
+1. Node.js 18 以上を用意
+2. 依存関係をインストール  
+   ```bash
+   npm install
+   ```
+3. `GEMINI_API_KEY` を [.env.local](.env.local) に設定
+4. 開発サーバーを起動  
+   ```bash
+   npm run dev
+   ```
 
-詳細は `docs/project-setup.md` を参照。
+## ビルド
 
-```
-# 依存インストール
-pnpm i
-
-# 開発起動
-pnpm dev
-```
-
-GTFS ZIP は `gtfs_data/AllLines-20250401_群馬中央バス株式会社.zip` を用意し、画面左カラムの「GTFSを読み込む」から選択してください。
-
-## GitHub リモート設定とプッシュ
-
-```
-git init
-git remote add origin https://github.com/ZephyrCivic/sdt-moc.git
-git add .
-git commit -m "chore: bootstrap docs and config"
-git branch -M main
-git push -u origin main
+```bash
+npm run build
 ```
 
-## GitHub Pages
+出力（`dist/`）を GitHub Pages で配信します。`vite.config.ts` の `base` はプロジェクトリポジトリ `sdt-moc` を想定し `/sdt-moc/` に設定しています。異なる公開パスに変更する場合は `base` を更新してください。
 
-- `vite.config.ts` の `base` は `/sdt-moc/` に設定してください。
-- GitHub Actions により `main` へ push すると自動デプロイされます。
-- 公開URL: https://ZephyrCivic.github.io/sdt-moc/
+## GitHub Pages へのデプロイ
 
+- `.github/workflows/deploy.yml` が GitHub Actions でビルド＆`gh-pages` 既定環境にデプロイします。
+- `main` ブランチへ push すると自動で `npm ci && npm run build` が走り、`dist/` が Pages に公開されます。
+- 初回のみリポジトリ設定の **Settings > Pages** で **Source: GitHub Actions** を選択してください。
+- デプロイ URL: `https://<GitHubユーザー名>.github.io/sdt-moc/`
 
+## フォルダ構成
 
+```
+.
+├─ App.tsx            # UI ロジック（ステップ UI、マップ、シナリオ比較）
+├─ index.tsx          # React エントリーポイント
+├─ index.html         # Vite テンプレート & Tailwind CDN 設定
+├─ services/
+│  ├─ gtfsService.ts  # 福津市 GTFS データの解析
+│  └─ geminiService.ts # Gemini でのシナリオ生成
+├─ types.ts           # 型定義
+└─ vite.config.ts     # Vite 設定（Pages 向け base など）
+```
+
+## 環境変数
+
+| 変数            | 用途                         |
+|-----------------|------------------------------|
+| `GEMINI_API_KEY` | Gemini Generative Language API 認証 |
+
+`.env.local` に書き込むと `process.env.GEMINI_API_KEY` として参照されます。README には鍵をコミットしないよう注意してください。

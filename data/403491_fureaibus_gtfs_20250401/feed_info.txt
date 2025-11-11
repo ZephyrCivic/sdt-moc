@@ -1,2 +1,0 @@
-﻿feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
-粕屋町総務部経営政策課,http://www.town.kasuya.fukuoka.jp/,ja,20250401,20251130,20250401_v1_0

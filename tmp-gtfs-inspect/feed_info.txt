@@ -1,2 +1,0 @@
-﻿feed_publisher_name,feed_publisher_url,feed_contact_url,feed_contact_email,feed_lang,feed_start_date,feed_end_date,feed_version
-群馬中央バス株式会社,http://gunmachuobus.co.jp/,http://gunmachuobus.co.jp/,sonosujiya@gmail.com,ja,20250401,20260331,20250401_2025年04月01日（改正） その筋屋 1.722
