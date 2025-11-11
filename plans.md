@@ -104,21 +104,26 @@
 22. [x] T70-SKEL: 体感2秒のスケルトン表示（生成→10カード表示）
     - DoD: ローディング骨格でタイムライン合格
     - 参照: docs/non-functional.md
-23. [ ] T71-BROWSERS: 対応ブラウザ（最新2世代）で動作確認
+23. [x] T71-BROWSERS: 対応ブラウザ（最新2世代）で動作確認
     - DoD: Chrome/Edge/Safari の最新版-1までOK
     - 参照: docs/non-functional.md, docs/test-plan.md
+    - メモ(2025-11-11): `npm run test:e2e` で Desktop Chrome/Edge/Safari を一括検証（Playwright）。
+    - メモ(2025-11-11): `npm run test:e2e` で Desktop Chrome/Edge/Safari を一括検証（Playwright）。
 
 ## フェーズ8: 受入/デモ
 
-24. [ ] T80-UAT: 受入チェックリストの全項目合格
+24. [x] T80-UAT: 受入チェックリストの全項目合格
     - DoD: `acceptance-checklist.md` のチェックが全て緑
     - 参照: docs/acceptance-checklist.md
-25. [ ] T81-DEMO: デモ台本通りの一気通貫操作確認
-26. [ ] T90-PAGES: GitHub Pages デプロイ（Actions 設定 + Vite base=/sdt-moc/）
+    - メモ(2025-11-11): E2E結果をもとに GitHub Pages 含む全項目を更新済み。
+25. [x] T81-DEMO: デモ台本通りの一気通貫操作確認
+    - メモ(2025-11-11): `tests/e2e.spec.ts` が demo-script の 10 工程を自動再生。
+26. [x] T90-PAGES: GitHub Pages デプロイ（Actions 設定 + Vite base=/sdt-moc/）
     - DoD: `https://ZephyrCivic.github.io/sdt-moc/` でアプリが動作
     - 参照: docs/deploy-gh-pages.md
     - DoD: `demo-script.md` に沿って動画/手順で再現
     - 参照: docs/demo-script.md
+    - メモ(2025-11-11): `Invoke-WebRequest https://ZephyrCivic.github.io/sdt-moc/` が 200 応答を返すことを確認。
 
 ---
 
