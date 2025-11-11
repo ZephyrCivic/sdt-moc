@@ -49,59 +49,59 @@
 
 ## フェーズ2: 画面レイアウト（単一ページ・三カラム）
 
-11. [ ] T20-LAYOUT: 3カラム骨格（左=入力/中央=地図/右=候補フィード）
+11. [x] T20-LAYOUT: 3カラム骨格（左=入力/中央=地図/右=候補フィード）
    - DoD: レスポンシブで横3分割、固定ヘッダなし
    - 参照: docs/ui-layout.md
-11. [ ] T21-LABELS: ラベル/表記統一（ボタン/バッジ/ツールチップ）
+11. [x] T21-LABELS: ラベル/表記統一（ボタン/バッジ/ツールチップ）
    - DoD: 文言が `labels-and-terminology.md` に一致
    - 参照: docs/labels-and-terminology.md
 
 ## フェーズ3: 候補生成（モック）
 
-12. [~] T30-GEN-API: 「シナリオ抽出」モック API 実装（同期: 10案返却）
+12. [x] T30-GEN-API: 「シナリオ抽出」モック API 実装（同期: 10案返却）
    - DoD: クリックで10カード出現、各カードに1行理由・未評価バッジ
    - 参照: docs/mock-api.md, docs/reason-phrases.md, docs/diversity-rules.md
    - メモ(2025-11-06): MSW初期化＋生成/評価/SSEハンドラを実装（候補10件モック生成）
-13. [ ] T31-DIVERSITY: 多様性ルール適用（空間/施策/強度×摂動）
+13. [x] T31-DIVERSITY: 多様性ルール適用（空間/施策/強度×摂動）
    - DoD: 類似案に差分注記、ツールチップでフラグ確認可
    - 参照: docs/diversity-rules.md
-14. [ ] T32-ANNOT: 地図アノテーション（線/点/面の同期ハイライト）
+14. [x] T32-ANNOT: 地図アノテーション（線/点/面の同期ハイライト）
    - DoD: カード選択で地図が同期強調
    - 参照: docs/ui-layout.md
 
 ## フェーズ4: SDT評価（非同期モック）
 
-15. [ ] T40-QUEUE: 非同期キュー表現（評価%・最終更新・再送）
+15. [x] T40-QUEUE: 非同期キュー表現（評価%・最終更新・再送）
     - DoD: 進捗がカードに表示、同一フレームでカード=地図更新
     - 参照: docs/async-error-handling.md, docs/mock-api.md
-16. [ ] T41-BULK: 「SDTで評価」一括送信と部分失敗/タイムアウト
+16. [x] T41-BULK: 「SDTで評価」一括送信と部分失敗/タイムアウト
     - DoD: 自動/手動再送をUIで選べ、失敗コードが残る
     - 参照: docs/async-error-handling.md
 
 ## フェーズ5: 推奨/並び替え/フィルタ
 
-17. [ ] T50-KPI: KPI4軸の表示制御（生成直後は非表示→実測のみ表示）
+17. [x] T50-KPI: KPI4軸の表示制御（生成直後は非表示→実測のみ表示）
     - DoD: SDT戻り後にのみ KPI がカード/地図に反映
     - 参照: docs/kpis.md
-18. [ ] T51-RANK: 優先KPIによる並び替えと推奨判定（補助KPIで閾値確認）
+18. [x] T51-RANK: 優先KPIによる並び替えと推奨判定（補助KPIで閾値確認）
     - DoD: 推奨バッジ付与、優先KPI切替で順位のみ即時変化
     - 参照: docs/recommendation-logic.md
-19. [ ] T52-FILTER: トグル（推奨のみ/達成のみ）と未評価の下段グレー表示
+19. [x] T52-FILTER: トグル（推奨のみ/達成のみ）と未評価の下段グレー表示
     - DoD: カード=地図で同時に適用、ゼロ件時の自動解除
     - 参照: docs/filters-and-sorting.md
 
 ## フェーズ6: 説明責任（Reason/出典/ヘルプ）
 
-20. [ ] T60-REASON: 1行理由テンプレ（特徴×地域×施策）と差分注記
+20. [x] T60-REASON: 1行理由テンプレ（特徴×地域×施策）と差分注記
     - DoD: 全カードに句型準拠の理由、差分は[]で追記
     - 参照: docs/reason-phrases.md
-21. [ ] T61-SOURCE: 推奨条件の簡易式と閾値出典ツールチップ
+21. [x] T61-SOURCE: 推奨条件の簡易式と閾値出典ツールチップ
     - DoD: ヘルプアイコンで式/出典を開示
     - 参照: docs/recommendation-logic.md
 
 ## フェーズ7: 非機能/UX
 
-22. [ ] T70-SKEL: 体感2秒のスケルトン表示（生成→10カード表示）
+22. [x] T70-SKEL: 体感2秒のスケルトン表示（生成→10カード表示）
     - DoD: ローディング骨格でタイムライン合格
     - 参照: docs/non-functional.md
 23. [ ] T71-BROWSERS: 対応ブラウザ（最新2世代）で動作確認
@@ -128,3 +128,4 @@
 - モックAPI/MSW: 開発起動時に自動有効（詳細は mock-api.md）
 - 型検査: `pnpm typecheck`
 - ビルド: `pnpm build`
+

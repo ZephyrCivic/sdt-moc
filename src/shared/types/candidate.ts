@@ -31,6 +31,13 @@ export const diversityFlagsSchema = z.object({
   strengthMix: z.boolean(),
 })
 
+export const evidenceSchema = z.object({
+  metric: z.string().min(1),
+  threshold: z.string().min(1),
+  dataset: z.string().min(1),
+  updatedAt: z.string().datetime(),
+})
+
 export const candidateStatusSchema = z.enum([
   'not_evaluated',
   'evaluating',
@@ -51,6 +58,7 @@ export const candidateSchema = z.object({
   lastUpdatedAt: z.string().datetime().optional(),
   kpi: kpiSchema.optional(),
   recommended: z.boolean().optional(),
+  evidence: evidenceSchema.optional(),
 })
 
 export type CandidateId = z.infer<typeof candidateIdSchema>
@@ -60,4 +68,4 @@ export type GeometryKind = z.infer<typeof geometryKindSchema>
 export type Annotation = z.infer<typeof annotationSchema>
 export type CandidateStatus = z.infer<typeof candidateStatusSchema>
 export type Candidate = z.infer<typeof candidateSchema>
-
+export type Evidence = z.infer<typeof evidenceSchema>

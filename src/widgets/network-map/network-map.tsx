@@ -1,15 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import maplibregl, { type GeoJSONSource, type Map } from 'maplibre-gl'
-import type { FeatureCollection, LineString, Point } from 'geojson'
+import type {
+  Feature,
+  FeatureCollection,
+  LineString,
+  Point,
+  Polygon,
+} from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
 import type { Network } from '@/entities/gtfs/types'
+import type { Annotation } from '@/shared/types/candidate'
+import {
+  getHighlightedCandidate,
+  useScenarioStore,
+} from '@/shared/state/scenario-store'
 
 const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json'
 const ROUTES_SOURCE_ID = 'network-routes'
 const ROUTES_LAYER_ID = 'network-routes-line'
 const STOPS_SOURCE_ID = 'network-stops'
 const STOPS_LAYER_ID = 'network-stops-circle'
+const CANDIDATE_LINE_SOURCE_ID = 'candidate-line'
+const CANDIDATE_LINE_LAYER_ID = 'candidate-line-layer'
+const CANDIDATE_POINT_SOURCE_ID = 'candidate-point'
+const CANDIDATE_POINT_LAYER_ID = 'candidate-point-layer'
+const CANDIDATE_POLYGON_SOURCE_ID = 'candidate-polygon'
+const CANDIDATE_POLYGON_LAYER_ID = 'candidate-polygon-layer'
+const CANDIDATE_POLYGON_OUTLINE_LAYER_ID = 'candidate-polygon-outline-layer'
 
 const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
   type: 'FeatureCollection',
@@ -98,15 +116,13 @@ function updateNetworkData(map: Map, network: Network | null) {
   const stopSource = map.getSource(STOPS_SOURCE_ID) as GeoJSONSource | undefined
 
   if (network && network.routes.length > 0) {
-    const routes = toRouteCollection(network)
-    routeSource?.setData(routes)
+    routeSource?.setData(toRouteCollection(network))
   } else {
     routeSource?.setData(EMPTY_FEATURE_COLLECTION)
   }
 
   if (network && network.stops.length > 0) {
-    const stops = toStopCollection(network)
-    stopSource?.setData(stops)
+    stopSource?.setData(toStopCollection(network))
   } else {
     stopSource?.setData(EMPTY_FEATURE_COLLECTION)
   }
@@ -126,13 +142,60 @@ function updateNetworkData(map: Map, network: Network | null) {
       } else {
         map.fitBounds(bounds, {
           padding: window.innerWidth < 1024 ? 32 : 56,
-          maxZoom: 14,
           duration: 800,
-          essential: true,
         })
       }
     }
   }
+}
+
+function toAnnotationCollections(annotations: Annotation[]) {
+  const lineFeatures: Feature<LineString>[] = []
+  const pointFeatures: Feature<Point>[] = []
+  const polygonFeatures: Feature<Polygon>[] = []
+
+  annotations.forEach((annotation, index) => {
+    const feature = {
+      ...annotation.feature,
+      id: `${annotation.kind}-${index}`,
+    } as Feature
+
+    if (annotation.kind === 'line') {
+      lineFeatures.push(feature as Feature<LineString>)
+    } else if (annotation.kind === 'point') {
+      pointFeatures.push(feature as Feature<Point>)
+    } else if (annotation.kind === 'polygon') {
+      polygonFeatures.push(feature as Feature<Polygon>)
+    }
+  })
+
+  return {
+    lines: {
+      type: 'FeatureCollection',
+      features: lineFeatures,
+    } satisfies FeatureCollection<LineString>,
+    points: {
+      type: 'FeatureCollection',
+      features: pointFeatures,
+    } satisfies FeatureCollection<Point>,
+    polygons: {
+      type: 'FeatureCollection',
+      features: polygonFeatures,
+    } satisfies FeatureCollection<Polygon>,
+  }
+}
+
+function updateAnnotationLayers(map: Map, annotations: Annotation[]) {
+  const { lines, points, polygons } = toAnnotationCollections(annotations)
+  ;(map.getSource(CANDIDATE_LINE_SOURCE_ID) as GeoJSONSource | undefined)?.setData(
+    lines,
+  )
+  ;(map.getSource(CANDIDATE_POINT_SOURCE_ID) as GeoJSONSource | undefined)?.setData(
+    points,
+  )
+  ;(map.getSource(CANDIDATE_POLYGON_SOURCE_ID) as GeoJSONSource | undefined)?.setData(
+    polygons,
+  )
 }
 
 export function NetworkMap() {
@@ -140,31 +203,37 @@ export function NetworkMap() {
   const mapRef = useRef<Map | null>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const [mapReady, setMapReady] = useState(false)
-
-  const network = useGtfsUploadStore((state) => state.network)
-  const status = useGtfsUploadStore((state) => state.status)
+  const { network, status } = useGtfsUploadStore((state) => ({
+    network: state.network,
+    status: state.status,
+  }))
+  const annotations = useScenarioStore((state) => {
+    const candidate = getHighlightedCandidate(state)
+    return candidate?.annotations ?? []
+  })
 
   const placeholderMessage = useMemo(() => {
     switch (status) {
       case 'reading':
-        return 'GTFSを解析中です…'
+        return 'GTFSを読み込み中です'
       case 'error':
-        return 'GTFSの読み込みでエラーが発生しました。再試行してください。'
+        return 'GTFSの読込に失敗しました'
+      case 'idle':
+        return 'GTFSを読み込むとネットワークを表示します'
       default:
-        return 'GTFSを読み込むと路線と停留所が地図に表示されます。'
+        return null
     }
   }, [status])
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) {
+    if (!containerRef.current) {
       return
     }
 
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: MAP_STYLE_URL,
-      center: [139.7671, 35.6812],
-      zoom: 9,
+      attributionControl: true,
       locale: {
         'NavigationControl.ZoomIn': 'ズームイン',
         'NavigationControl.ZoomOut': 'ズームアウト',
@@ -232,6 +301,63 @@ export function NetworkMap() {
         },
       })
 
+      map.addSource(CANDIDATE_LINE_SOURCE_ID, {
+        type: 'geojson',
+        data: EMPTY_FEATURE_COLLECTION,
+      })
+      map.addSource(CANDIDATE_POINT_SOURCE_ID, {
+        type: 'geojson',
+        data: EMPTY_FEATURE_COLLECTION,
+      })
+      map.addSource(CANDIDATE_POLYGON_SOURCE_ID, {
+        type: 'geojson',
+        data: EMPTY_FEATURE_COLLECTION,
+      })
+
+      map.addLayer({
+        id: CANDIDATE_POLYGON_LAYER_ID,
+        type: 'fill',
+        source: CANDIDATE_POLYGON_SOURCE_ID,
+        paint: {
+          'fill-color': '#f97316',
+          'fill-opacity': 0.18,
+        },
+      })
+
+      map.addLayer({
+        id: CANDIDATE_POLYGON_OUTLINE_LAYER_ID,
+        type: 'line',
+        source: CANDIDATE_POLYGON_SOURCE_ID,
+        paint: {
+          'line-color': '#f97316',
+          'line-width': 2,
+          'line-dasharray': [1.5, 1.5],
+        },
+      })
+
+      map.addLayer({
+        id: CANDIDATE_LINE_LAYER_ID,
+        type: 'line',
+        source: CANDIDATE_LINE_SOURCE_ID,
+        paint: {
+          'line-color': '#f97316',
+          'line-width': 4,
+          'line-opacity': 0.9,
+        },
+      })
+
+      map.addLayer({
+        id: CANDIDATE_POINT_LAYER_ID,
+        type: 'circle',
+        source: CANDIDATE_POINT_SOURCE_ID,
+        paint: {
+          'circle-color': '#f97316',
+          'circle-radius': 6,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2,
+        },
+      })
+
       setMapReady(true)
     }
 
@@ -261,6 +387,13 @@ export function NetworkMap() {
   }, [network, mapReady])
 
   useEffect(() => {
+    if (!mapReady || !mapRef.current) {
+      return
+    }
+    updateAnnotationLayers(mapRef.current, annotations)
+  }, [annotations, mapReady])
+
+  useEffect(() => {
     return () => {
       if (mapRef.current) {
         const routeSource = mapRef.current.getSource(
@@ -283,7 +416,7 @@ export function NetworkMap() {
         ref={containerRef}
         className="h-full min-h-[280px] w-full overflow-hidden rounded-md bg-muted/40 ring-1 ring-border/50"
       />
-      {showPlaceholder ? (
+      {showPlaceholder && placeholderMessage ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
           <div className="rounded-md border border-border/70 bg-background/90 px-4 py-3 text-center text-xs text-muted-foreground shadow-sm backdrop-blur">
             {placeholderMessage}

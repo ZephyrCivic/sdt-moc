@@ -1,9 +1,11 @@
 import type { CandidateKpiKey } from './types'
 import type { MockCandidate } from './types'
 
-const MEASURES = ['減便', '停留所統合', '区間短縮', 'DRT導入'] as const
+const MEASURES = ['減便', '停留所統廃合', '区間短縮', 'DRT導入'] as const
 const STRENGTHS = ['弱', '中', '強'] as const
 const GEOMETRY_KINDS = ['line', 'point', 'polygon'] as const
+const INDICATORS = ['混雑率↑', '収支悪化', '需要分散', 'アクセス不均衡', '高齢化率↑'] as const
+const AREAS = ['幹線北部', '南端区間', '中心医療圏', '連節支線', '丘陵地区'] as const
 
 const SAMPLE_POINTS = [
   [139.063, 36.326],
@@ -23,7 +25,7 @@ function createAnnotation(index: number) {
           type: 'Point' as const,
           coordinates: point,
         },
-        note: '主要停留所の統合案',
+        note: '周辺停留所の統合候補',
       },
     ]
   }
@@ -51,20 +53,35 @@ function createAnnotation(index: number) {
         type: 'LineString' as const,
         coordinates: [start, end],
       },
-      note: '現行便の短縮区間候補',
+      note: '幹線への短絡ルート案',
     },
   ]
 }
 
-function createReasonTitle(
-  measure: (typeof MEASURES)[number],
-  strength: (typeof STRENGTHS)[number],
-  index: number,
-) {
+function createReason(index: number, measure: (typeof MEASURES)[number]) {
+  const indicator = INDICATORS[index % INDICATORS.length]
+  const area = AREAS[index % AREAS.length]
+  return `${indicator} × ${area} × ${measure}`
+}
+
+function createTitle(index: number, measure: (typeof MEASURES)[number]) {
   const prefix = ['A', 'B', 'C', 'D', 'E', 'F'][index % 6]
+  return `${prefix}${index + 1}案: ${measure}`
+}
+
+function createEvidence(priorityKpi: CandidateKpiKey) {
+  const metricMap: Record<CandidateKpiKey, { label: string; threshold: string }> = {
+    coverageRate: { label: 'カバー率', threshold: '>= 80%' },
+    avgTravelTime: { label: '平均所要時間', threshold: '<= 32 分' },
+    operatingCost: { label: '運行コスト', threshold: '<= 900 千円/日' },
+    serviceLevelRetention: { label: 'サービスレベル維持率', threshold: '>= 95%' },
+  }
+  const meta = metricMap[priorityKpi]
   return {
-    title: `${prefix}${index + 1}番案: ${measure}`,
-    reason: `${measure}を${strength}強度で実施し、乗車効率と路線持続性を両立します。`,
+    metric: meta.label,
+    threshold: meta.threshold,
+    dataset: `SDT-${priorityKpi} v1.2`,
+    updatedAt: new Date().toISOString(),
   }
 }
 
@@ -82,13 +99,12 @@ export function generateMockCandidates(
   return Array.from({ length: 10 }).map((_, index) => {
     const measure = MEASURES[index % MEASURES.length]
     const strength = STRENGTHS[index % STRENGTHS.length]
-    const { title, reason } = createReasonTitle(measure, strength, index)
     const annotations = createAnnotation(index)
 
     return {
       id: crypto.randomUUID(),
-      title,
-      reason,
+      title: createTitle(index, measure),
+      reason: createReason(index, measure),
       measure,
       strength,
       annotations,
@@ -99,6 +115,7 @@ export function generateMockCandidates(
       recommended: false,
       progress: 0,
       lastUpdatedAt: new Date().toISOString(),
+      evidence: createEvidence(priorityKpi),
     }
   })
 }

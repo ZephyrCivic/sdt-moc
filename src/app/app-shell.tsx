@@ -1,20 +1,31 @@
 import { Button } from '@/components/ui/button'
 import { GtfsUploadPanel } from '@/widgets/gtfs-upload-panel'
 import { NetworkMap } from '@/widgets/network-map'
+import { PriorityKpiSelect } from '@/widgets/priority-kpi-select'
+import { ScenarioPanel } from '@/widgets/scenario-panel'
 import { useGtfsUploadStore } from '@/shared/state/gtfs-upload-store'
+import { useScenarioControlsStore } from '@/shared/state/scenario-controls-store'
+import { useScenarioStore } from '@/shared/state/scenario-store'
 
 export function AppShell() {
-  const { status, summary } = useGtfsUploadStore((state) => ({
+  const { status: gtfsStatus, summary } = useGtfsUploadStore((state) => ({
     status: state.status,
     summary: state.summary,
   }))
+  const priorityKpi = useScenarioControlsStore((state) => state.priorityKpi)
+  const scenarioStatus = useScenarioStore((state) => state.status)
+  const scenarioError = useScenarioStore((state) => state.error)
+  const candidateCount = useScenarioStore((state) => state.candidates.length)
+  const generateScenarios = useScenarioStore((state) => state.generate)
+  const evaluateScenarios = useScenarioStore((state) => state.evaluate)
+  const clearScenarioError = useScenarioStore((state) => state.clearError)
 
-  const statusLabel = (() => {
-    switch (status) {
+  const gtfsStatusLabel = (() => {
+    switch (gtfsStatus) {
       case 'reading':
-        return '解析中'
+        return '読込中'
       case 'ready':
-        return '表示中'
+        return '完了'
       case 'error':
         return 'エラー'
       default:
@@ -22,89 +33,110 @@ export function AppShell() {
     }
   })()
 
+  const scenarioStatusLabel = (() => {
+    switch (scenarioStatus) {
+      case 'generating':
+        return 'シナリオ生成中'
+      case 'evaluating':
+        return 'SDT評価中'
+      case 'ready':
+        return '候補準備完了'
+      default:
+        return '未生成'
+    }
+  })()
+
+  const flowReady = gtfsStatus === 'ready'
+  const isGenerating = scenarioStatus === 'generating'
+  const isEvaluating = scenarioStatus === 'evaluating'
+  const canGenerate = flowReady && !isGenerating && !isEvaluating
+  const canEvaluate =
+    flowReady && candidateCount > 0 && !isGenerating && !isEvaluating
+
+  const handleGenerate = () => {
+    clearScenarioError()
+    void generateScenarios(priorityKpi)
+  }
+
+  const handleEvaluate = () => {
+    clearScenarioError()
+    void evaluateScenarios()
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="grid h-screen grid-rows-[auto_1fr] bg-background text-foreground">
       <header className="border-b border-border px-6 py-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold">MLIT UI Mock</h1>
-          <p className="text-sm text-muted-foreground">
-            GTFS取込から候補生成・SDT評価・推奨抽出までを一気通貫で確認するデモ
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            MLIT UI Mock / 見る・送る・選ぶ
           </p>
+          <h1 className="text-lg font-semibold">
+            GTFSから推奨3案までのワンフローを高速デモ
+          </h1>
         </div>
       </header>
 
-      <main className="grid h-[calc(100vh-4.5rem)] gap-4 px-6 py-4 lg:grid-cols-[320px_minmax(0,1fr)_360px]">
-        <section className="flex flex-col gap-6 overflow-y-auto rounded-lg border border-border bg-card/40 p-4">
+      <main className="grid h-full gap-4 px-6 py-4 lg:grid-cols-[minmax(280px,2fr)_minmax(0,5fr)_minmax(320px,3fr)]">
+        <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-border bg-card/40 p-4">
           <GtfsUploadPanel />
-
-          <section className="space-y-3">
-            <header>
-              <h2 className="text-sm font-semibold text-foreground">
-                優先KPIの選択
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                カバレッジ率や運行コストなど、主要指標を1つ選んでください。
-              </p>
-            </header>
-            <div className="rounded-lg border border-dashed border-border bg-background/50 p-4 text-sm text-muted-foreground">
-              KPIセレクタの実装予定地
+          <PriorityKpiSelect />
+          <section className="space-y-3 rounded-lg border border-dashed border-border bg-background/40 p-3">
+            <p className="text-sm font-semibold">シナリオ抽出</p>
+            <p className="text-xs text-muted-foreground">
+              GTFSを読み込むと10案を生成し、SDTへまとめて送信できます。
+            </p>
+            <div className="flex flex-col gap-2">
+              <Button
+                className="w-full"
+                disabled={!canGenerate}
+                onClick={handleGenerate}
+              >
+                シナリオ抽出
+              </Button>
+              <Button
+                className="w-full"
+                variant="outline"
+                disabled={!canEvaluate}
+                onClick={handleEvaluate}
+              >
+                SDTで評価
+              </Button>
             </div>
-          </section>
-
-          <section className="space-y-3">
-            <header>
-              <h2 className="text-sm font-semibold text-foreground">
-                シナリオ生成
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                GTFSを読み込んだ後に10案を生成し、SDT評価へ送信します。
+            <div className="text-xs text-muted-foreground">
+              <p>状態: {scenarioStatusLabel}</p>
+              <p>候補数: {candidateCount}件</p>
+            </div>
+            {scenarioError ? (
+              <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                {scenarioError}
               </p>
-            </header>
-            <Button className="w-full" disabled>
-              シナリオを生成
-            </Button>
+            ) : null}
           </section>
         </section>
 
         <section className="flex flex-col rounded-lg border border-border bg-card/40 p-4">
           <header className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-foreground">
-                地図ビュー
-              </h2>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                ネットワーク
+              </p>
               <p className="text-xs text-muted-foreground">
                 {summary
-                  ? `${summary.routeCount.toLocaleString()}系統 / ${summary.stopCount.toLocaleString()}停留所 / ${summary.shapeCount.toLocaleString()}経路点`
-                  : 'GTFSを読み込むと現状ネットワークを表示します'}
+                  ? `${summary.routeCount.toLocaleString()}路線 / ${summary.stopCount.toLocaleString()}停留所 / ${summary.shapeCount.toLocaleString()}形状`
+                  : 'GTFSを読み込むと現況ネットワークを表示'}
               </p>
             </div>
-            <span className="text-xs text-muted-foreground">{statusLabel}</span>
+            <div className="text-right text-xs text-muted-foreground">
+              <p>GTFS: {gtfsStatusLabel}</p>
+              <p>候補: {scenarioStatusLabel}</p>
+            </div>
           </header>
           <div className="mt-4 flex min-h-[320px] flex-1">
             <NetworkMap />
           </div>
         </section>
 
-        <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-card/40">
-          <div className="border-b border-border px-4 py-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              候補シナリオ一覧
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              生成後に10件のカードを表示し、多様性ルールを可視化します。
-            </p>
-          </div>
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3 text-sm text-muted-foreground">
-            {[1, 2, 3].map((id) => (
-              <div
-                key={id}
-                className="rounded-md border border-dashed border-muted bg-background/60 p-3"
-              >
-                候補カード {id}
-              </div>
-            ))}
-          </div>
-        </section>
+        <ScenarioPanel />
       </main>
     </div>
   )
